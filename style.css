@@ -64,3 +64,37 @@ canvas {
 #right-panel {
     transform: translateX(100%);
 }
+
+#closings li {
+    margin: 1em;
+}
+
+#offices-li {
+    border-left: 2px solid lightblue;
+    border-bottom: 2px solid lightblue;
+}
+
+#schools-li {
+    border-left: 2px solid lightgreen;
+    border-bottom: 2px solid lightgreen;
+}
+
+#cinemas-li {
+    border-left: 2px solid yellow;
+    border-bottom: 2px solid yellow;
+}
+
+#goodies-shops-li {
+    border-left: 2px solid cyan;
+    border-bottom: 2px solid cyan;
+}
+
+#hospitals-li {
+    border-left: 2px solid red;
+    border-bottom: 2px solid red;
+}
+
+#food-shops-li {
+    border-left: 2px solid orange;
+    border-bottom: 2px solid orange;
+}
