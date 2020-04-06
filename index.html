@@ -1,0 +1,152 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        
+        <title>City Playgound</title>
+    </head>
+
+    <body>
+        <canvas id="viewport"></canvas>
+        <div id="night-mask"></div>
+        <div id="panels-container">
+            <div id="left-panel">
+                <label for="simulation-speed">Simulation speed</label>
+                <input id="simulation-speed" type="number" value="1" min="1" max="10" step="1" />
+
+                <!-- <h1>Charts</h1> -->
+
+                <h1>Government actions</h1>
+                <h2>Close/open buildings</h2>
+                <ul>
+                    <li>Offices <button id="close-offices">Close</button></li>
+                    <li>Schools <button id="close-schools">Close</button></li>
+                    <li>Cinemas <button id="close-cinemas">Close</button></li>
+                    <li>Goodies shops <button id="close-goodies-shops">Close</button></li>
+                </ul>
+                <button id="forbid-walks">Forbid walks</button><br />
+                <button id="boost-hospitals">Hospitals capacity x1.5</button>
+                <button id="protect-doctors">Give a mask to all doctors (decrease infection probability by 70%)</button>
+
+                <h1>Virus</h1>
+                <button id="infect-random">Infect a random blob with the virus</button>
+                <p id="infected-count"></p>
+                <p id="in-hospital-count"></p>
+                <p id="deaths-count"></p>
+                <p id="cured-count"></p>
+                <button id="introduce-medicine">Introduce a medicine (boosts hospital efficiency)</button>
+            </div>
+            <div id="right-panel">
+                <h1>Blob properties</h1>
+                <h3 id="blob-state"></h3>
+                <h3 id="hp"></h3>
+                <h2>Job</h2>
+                <p id="job-type">Type: </p>
+            </div>
+        </div>
+
+
+        <script src="dependencies/util.js"></script>
+        <script src="dependencies/tilemap.js"></script>
+        <script src="dependencies/city.js"></script>
+        <script src="dependencies/entities.js"></script>
+        <script src="blob.js"></script>
+        <script src="blobCity.js"></script>
+        <script src="canvasNavigation.js"></script>
+        <script src="clock.js"></script>
+        <script src="rightPanel.js"></script>
+        <script src="government.js"></script>
+        <script src="disease.js"></script>
+        <script src="diseaseTemplate.js"></script>
+        <script src="virus.js"></script>
+        <script src="virusActions.js"></script>
+
+        <script>
+            const canvas = document.getElementById("viewport");
+            const context = canvas.getContext("2d");
+            var width	= window.innerWidth,
+                height	= window.innerHeight,
+                ratio	= window.devicePixelRatio;
+
+            canvas.width  = width  * ratio;
+            canvas.height = height * ratio;
+            canvas.style.width  = width  + "px";
+            canvas.style.height = height + "px";
+            context.scale(ratio, ratio);
+
+            let map = new BlobCity(canvas, context, {
+                mapSize: 50,
+                tileSize: 100,
+                minBlobsPerHouse: 1,
+                maxBlobsPerHouse: 5,
+                maxBlobCount: 2500
+            });
+
+            let simulationSpeed = 1;
+            const globalClock = new Clock(300);
+
+            let simulationSpeedInput = document.getElementById("simulation-speed");
+            simulationSpeedInput.addEventListener("input", () => {
+                simulationSpeed = parseFloat(simulationSpeedInput.value);
+            });
+
+            function animate()
+            {
+                clearAndUpdateCamera();
+                
+                for (let i = 0; i < simulationSpeed; i++)
+                {
+                    map.update();
+
+                    globalClock.update();
+                }
+                
+                map.render();
+
+                context.save();
+
+                context.resetTransform();
+                context.fillStyle = "rgba(255, 255, 255, 0.9)";
+                context.fillRect(width * 0.35, 0, width * 0.3, 50);
+                context.fillStyle = "black";
+                context.textAlign = "center";
+                context.font = `40px "Segoe UI"`;
+                context.fillText(globalClock.toString(), width / 2, 40);
+
+                context.restore();
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            let leftPanel = document.getElementById("left-panel");
+            function toggleLeftPanel()
+            {
+                if (leftPanel.classList.contains("open"))
+                {
+                    leftPanel.classList.remove("open");
+                }
+                else
+                {
+                    leftPanel.classList.add("open");
+                }
+            }
+
+            let nightMask = document.getElementById("night-mask");
+            function dayNightCycle(isDay)
+            {
+                if (isDay)
+                {
+                    nightMask.style.opacity = "0";
+                    canvas.classList.remove("night");
+                }
+                else
+                {
+                    nightMask.style.opacity = "1";
+                    canvas.classList.add("night");
+                }
+            }
+
+        </script>
+    </body>
+</html>

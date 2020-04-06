@@ -1,0 +1,66 @@
+html, body {
+    margin: 0;
+    padding: 0;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+
+    transition: 2s;
+}
+
+.night {
+    filter: grayscale(0.2) brightness(85%);
+}
+
+#night-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 120, 0.4);
+
+    opacity: 0;
+    transition: 2s;
+}
+
+#panels-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+#panels-container div {
+    width: 30%;
+    padding: 1em;
+
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+
+    overflow-y: auto;
+
+    transition: 0.3s;
+}
+
+#panels-container .open {
+    transform: translateX(0%);
+}
+
+#left-panel {
+    transform: translateX(-100%);
+}
+
+#right-panel {
+    transform: translateX(100%);
+}
