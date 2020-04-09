@@ -15,7 +15,9 @@
 
                 <!-- <h1>Charts</h1> -->
 
+
                 <h1>Government actions</h1>
+                <h2 id="original-population">Original population size : </h2>
                 <h2>Close/open buildings</h2>
                 <ul id="closings">
                     <li id="offices-li">Offices <button id="close-offices">Close</button></li>
@@ -31,6 +33,7 @@
 
                 <h1>Virus</h1>
                 <button id="infect-random">Infect a random blob with the virus</button>
+                <canvas id="infected-chart"></canvas>
                 <p id="infected-count"></p>
                 <p id="in-hospital-count"></p>
                 <p id="deaths-count"></p>
@@ -61,6 +64,7 @@
         <script src="diseaseTemplate.js"></script>
         <script src="virus.js"></script>
         <script src="virusActions.js"></script>
+        <script src="chart.js"></script>
 
         <script>
             const canvas = document.getElementById("viewport");
@@ -75,6 +79,8 @@
             canvas.style.height = height + "px";
             context.scale(ratio, ratio);
 
+            let nightMask = document.getElementById("night-mask");
+
             let map = new BlobCity(canvas, context, {
                 mapSize: 50,
                 tileSize: 100,
@@ -82,6 +88,8 @@
                 maxBlobsPerHouse: 5,
                 maxBlobCount: 2500
             });
+            const originalPopulationSize = map.entities.length;
+            document.getElementById("original-population").innerText = "Original population size : " + originalPopulationSize;
 
             let simulationSpeed = 1;
             const globalClock = new Clock(300);
@@ -100,6 +108,15 @@
                     map.update();
 
                     globalClock.update();
+
+                    if (globalClock.hours % 6 <= 1 / globalClock.tickPerHours) // 4 updates per day
+                    {
+                        let infected = map.entities.filter((b) => b.diseases.length > 0);
+                        let inHospital = map.entities.filter((b) => b.state.name == "at hospital");
+                        let succeptible = map.entities.filter((b) => b.diseases.length <= 0);
+
+                        updateChart(infected.length, inHospital.length, deathsCount, succeptible.length);
+                    }
                 }
                 
                 map.render();
@@ -115,6 +132,15 @@
                 context.fillText(globalClock.toString(), width / 2, 40);
 
                 context.restore();
+                
+                if (globalClock.hours > 20 || globalClock.hours < 6)
+                {
+                    dayNightCycle(false);
+                }
+                else
+                {
+                    dayNightCycle(true);
+                }
 
                 requestAnimationFrame(animate);
             }
@@ -134,7 +160,6 @@
                 }
             }
 
-            let nightMask = document.getElementById("night-mask");
             function dayNightCycle(isDay)
             {
                 if (isDay)

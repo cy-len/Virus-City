@@ -54,6 +54,10 @@ class Blob extends AutonomousEntity
 
     setState(state, payload)
     {
+        if (this.state.name == "at hospital")
+        {
+            console.log(state, payload, this.health, this);
+        }
         this.state.name = state;
         this.state.beginTime = globalClock.hours;
         this.state.detail = payload;
@@ -338,7 +342,7 @@ class Blob extends AutonomousEntity
 
         let h = hospitals.shift();
 
-        while (h && h.patientsCount > h.capacity)
+        while (h && h.patientsCount >= h.capacity)
         {
             h = hospitals.shift();
         }
@@ -403,7 +407,16 @@ class Blob extends AutonomousEntity
         {
             if (this.state.name != "at hospital" && this.state.name != "going to hospital")
             {
+                let shouldGo = false;
+                if (this.state.name == "failed to go to hospital")
+                {
+                    shouldGo = true;
+                }
                 this.goToHospital();
+                if (shouldGo && this.state.name != "failed to go to hospital")
+                {
+                    console.log("Should go");
+                }
             }
         }
         else if (this.health < 80 && this.state.name != "at hospital")
@@ -413,7 +426,7 @@ class Blob extends AutonomousEntity
                 this.goHome();
             }
         }
-        else
+        else if (this.state.name != "at hospital")
         {
             if (this.age > 68)
             {
@@ -463,7 +476,6 @@ class Blob extends AutonomousEntity
 
                 if (this.health > 85 && isImmunised)
                 {
-                    incrementCuredCount();
                     this.state.detail.tile.patientsCount--;
                     decrementInHospitalCount();
                     this.goHome();
@@ -492,6 +504,7 @@ class Blob extends AutonomousEntity
             {
                 this.diseases.splice(i, 1);
                 decrementInfectedCount();
+                incrementCuredCount();
             }
         }
 

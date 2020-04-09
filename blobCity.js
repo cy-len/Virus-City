@@ -124,6 +124,7 @@ class BlobCity extends City
 
                 if (b.state.name == "at hospital")
                 {
+                    b.tile.patientsCount--;
                     decrementInHospitalCount();
                 }
             }
